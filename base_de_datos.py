@@ -59,7 +59,6 @@ def get_info_team(url, headers, nombre_equipo: str):
         paises += info_equipo[2]
         posiciones += info_equipo[3]
         i+=1
-    print(i)
     equipos = []
     for i in range(0,len(jugadores)):
         equipos.append(nombre_equipo)
@@ -67,19 +66,21 @@ def get_info_team(url, headers, nombre_equipo: str):
     return df
 
 
-x = "Sobreescribir"
+x = "Concatenar"
 archivo = 'player_data'
 final_df = pd.DataFrame({"Player": [], "Position": [],"Age": [], "Nation": [], "Equipo": []})
 if(x == "Vaciar"):
     final_df.to_excel(f'/Users/Colegio/Desktop/TaTeTi-Futbol/{archivo}.xlsx',index=False)
 
 if(x == "Concatenar"): 
-    boca = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors")
+    """boca = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors")
     final_df = pd.concat([final_df,boca])
     river = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers,"River Plate")
     final_df = pd.concat([final_df,river])
     slo = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers, "San Lorenzo")
-    final_df = pd.concat([final_df,slo])
+    final_df = pd.concat([final_df,slo])"""
+    indep = get_info_team("https://www.transfermarkt.com/club-atletico-independiente/alumni/verein/1234", headers,"Independiente")
+    final_df = pd.concat([final_df,indep])
     with pd.ExcelWriter(f'{archivo}.xlsx', mode='a', if_sheet_exists='overlay') as writer:  
         final_df.to_excel(writer)
 
