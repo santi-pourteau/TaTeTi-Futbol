@@ -70,8 +70,8 @@ def get_info_team(url, headers):
 
 
 boca = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers)
-river = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers, 'html.parser')
-slo = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers, 'html.parser')
+river = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers)
+slo = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers)
 
 todo_jug = boca[0] + river[0] + slo[0]
 todo_pos = boca[1] + river[1] + slo[1]
