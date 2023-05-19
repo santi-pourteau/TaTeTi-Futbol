@@ -27,7 +27,7 @@ def get_info_page(url: str, headers, parser: str):
     for i in range(1,len(Players)*3,3):
         AgeList.append(str(Age[i]).split('">')[1].split("<",1)[0])
 
-    for i in range(0,len(Positions)): #no funciona
+    for i in range(0,len(Positions)): 
         Positions[i] = str(Positions[i]).split('<td>',1)[1].split('</td>')[0]
         if(("Back" in  Positions[i]) or (Positions[i] == "Sweeper")):
             Positions[i] = "Defender"
@@ -35,42 +35,49 @@ def get_info_page(url: str, headers, parser: str):
             Positions[i] = "Midfielder"
         if(("Winger" in Positions[i]) or ("Striker" in Positions[i]) or ("Forward" in Positions[i])):
             Positions[i] = "Striker"
-        PositionsList.append(Positions[i]) 
+        if(1 < len(Positions[i]) < 50):
+            PositionsList.append(Positions[i]) 
     for i in range(2,(len(Players)*3),3):
         NationList.append(str(Nationality[i]).split('title="',1)[1].split('"/',1)[0])
     return (PlayersList,AgeList,NationList,PositionsList)
-def get_info_team(url, headers):
+
+def get_info_team(url, headers, nombre_equipo: str):
     jugadores = []
     edades = []
     paises = []
     posiciones = []
     i = 1
     jugadores_prev = ['a']
-    while(True): # <= 41
+    while(True):
         print(i)
-        equipo = get_info_page(f"{url}/page/{i}", headers, 'html.parser')
-        if(jugadores_prev[0] == equipo[0][0]):
+        info_equipo = get_info_page(f"{url}/page/{i}", headers, 'html.parser')
+        print(f"Len Pagina: {len(info_equipo[0])}")
+        if(jugadores_prev[0] == info_equipo[0][0]):
             break
-        jugadores_prev = equipo[0]
-        jugadores += equipo[0]
-        edades += equipo[1]
-        paises += equipo[2]
-        posiciones += equipo[3]
+        jugadores_prev = info_equipo[0]
+        jugadores += info_equipo[0]
+        edades += info_equipo[1]
+        paises += info_equipo[2]
+        posiciones += info_equipo[3]
         i+=1
     print(i)
-    return (jugadores,edades,paises,posiciones)
+    equipos = []
+    for i in range(0,len(jugadores)):
+        equipos.append(nombre_equipo)
+    print(f"Len Total: {len(jugadores)}")
+    df = pd.DataFrame({"Player": jugadores, "Position": posiciones,"Age": edades, "Nation": paises, "Equipo": equipos})
+    return df
 
 
 
-boca = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers)
-river = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers)
-slo = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers)
+final_df = pd.DataFrame({"Player": [], "Position": [],"Age": [], "Nation": [], "Equipo": []})
 
-todo_jug = boca[0] + river[0] + slo[0]
-todo_pos = boca[1] + river[1] + slo[1]
-todo_edad = boca[2] + river[2] + slo[2]
-todo_pais = boca[3] + river[3] + slo[3]
+boca = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors")
+final_df = pd.concat([final_df,boca])
+"""river = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers,"River Plate")
+final_df = pd.concat([final_df,river])
+slo = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers, "San Lorenzo")
+final_df = pd.concat([final_df,slo])"""
 
-final_df = pd.DataFrame({"Player": todo_jug, "Position": todo_pos[1],"Age": todo_edad[2], "Nation": todo_pais})
-final_df.to_excel('/Users/Colegio/Desktop/TaTeTi-Futbol/player_data.xlsx',index=False)
+final_df.to_excel('/Users/Colegio/Desktop/TaTeTi-Futbol/test.xlsx',index=False)
 
