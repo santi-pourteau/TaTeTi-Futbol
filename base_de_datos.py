@@ -50,8 +50,6 @@ def get_info_team(url, headers, nombre_equipo: str, df: pd.DataFrame):
     jugadores_prev = ['a']
     while(True):
         print(i)
-        if(i==2):
-            break
         info_equipo = get_info_page(f"{url}/page/{i}", headers, 'html.parser')
         if(jugadores_prev[0] == info_equipo[0][0]):
             break
