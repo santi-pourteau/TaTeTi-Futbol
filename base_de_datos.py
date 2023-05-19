@@ -41,7 +41,7 @@ def get_info_page(url: str, headers, parser: str):
         NationList.append(str(Nationality[i]).split('title="',1)[1].split('"/',1)[0])
     return (PlayersList,AgeList,NationList,PositionsList)
 
-def get_info_team(url, headers, nombre_equipo: str):
+def get_info_team(url, headers, nombre_equipo: str, df: pd.DataFrame):
     jugadores = []
     edades = []
     paises = []
@@ -50,6 +50,8 @@ def get_info_team(url, headers, nombre_equipo: str):
     jugadores_prev = ['a']
     while(True):
         print(i)
+        if(i==2):
+            break
         info_equipo = get_info_page(f"{url}/page/{i}", headers, 'html.parser')
         if(jugadores_prev[0] == info_equipo[0][0]):
             break
@@ -61,36 +63,33 @@ def get_info_team(url, headers, nombre_equipo: str):
         i+=1
     equipos = []
     for i in range(0,len(jugadores)):
-        equipos.append(nombre_equipo)
-    df = pd.DataFrame({"Player": jugadores, "Position": posiciones,"Age": edades, "Nation": paises, "Equipo": equipos})
+        equipos.append([nombre_equipo])
+    new_df = pd.DataFrame({"Player": jugadores, "Position": posiciones,"Age": edades, "Nation": paises, "Equipo": equipos})
+    df = pd.concat([df,new_df])
+    agg_functions = {'Player': 'first', 'Position': 'first', 'Age': 'first', 'Nation': 'first', 'Equipo': 'sum'}
+    df = df.groupby(df['Player']).aggregate(agg_functions)
     return df
 
 
-x = "Concatenar"
-archivo = 'player_data'
+x = "Sobreescribir"
+archivo = 'test'
 final_df = pd.DataFrame({"Player": [], "Position": [],"Age": [], "Nation": [], "Equipo": []})
-if(x == "Vaciar"):
-    final_df.to_excel(f'/Users/Colegio/Desktop/TaTeTi-Futbol/{archivo}.xlsx',index=False)
+#if(x == "Vaciar"):
+    #final_df.to_excel(f'/Users/Colegio/Desktop/TaTeTi-Futbol/{archivo}.xlsx',index=False)
 
 if(x == "Concatenar"): 
-    """boca = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors")
-    final_df = pd.concat([final_df,boca])
-    river = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers,"River Plate")
-    final_df = pd.concat([final_df,river])
-    slo = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers, "San Lorenzo")
-    final_df = pd.concat([final_df,slo])"""
-    indep = get_info_team("https://www.transfermarkt.com/club-atletico-independiente/alumni/verein/1234", headers,"Independiente")
-    final_df = pd.concat([final_df,indep])
-    with pd.ExcelWriter(f'{archivo}.xlsx', mode='a', if_sheet_exists='overlay') as writer:  
-        final_df.to_excel(writer)
+    final_df = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors",final_df)
+    final_df = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers,"River Plate",final_df)
+    final_df = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers, "San Lorenzo",final_df)
+    final_df = get_info_team("https://www.transfermarkt.com/club-atletico-independiente/alumni/verein/1234", headers,"Independiente",final_df)
+    #with pd.ExcelWriter(f'{archivo}.xlsx', mode='a', if_sheet_exists='overlay') as writer:  
+        #final_df.to_excel(writer)
 
 if(x == "Sobreescribir"):
-    boca = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors")
-    final_df = pd.concat([final_df,boca])
-    river = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers,"River Plate")
-    final_df = pd.concat([final_df,river])
-    slo = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers, "San Lorenzo")
-    final_df = pd.concat([final_df,slo])
+    final_df = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors",final_df)
+    final_df = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers,"River Plate",final_df)
+    final_df = get_info_team("https://www.transfermarkt.com/club-atletico-san-lorenzo-de-almagro/alumni/verein/1775", headers, "San Lorenzo",final_df)
+    final_df = get_info_team("https://www.transfermarkt.com/club-atletico-independiente/alumni/verein/1234", headers,"Independiente",final_df)
     final_df.to_excel(f'/Users/Colegio/Desktop/TaTeTi-Futbol/{archivo}.xlsx',index=False)
     
 
