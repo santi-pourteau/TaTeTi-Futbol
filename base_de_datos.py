@@ -29,19 +29,13 @@ def get_info_page(url: str, headers, parser: str):
 
     for i in range(0,len(Positions)): #no funciona
         Positions[i] = str(Positions[i]).split('<td>',1)[1].split('</td>')[0]
-        try:
-            Positions[i] = str(Positions[i]).split('</a>',1)[1]
-            if(1 < len(Positions[i]) < 50):
-                PositionsList.append(Positions[i])
-        except:
-            if(1 < len(Positions[i]) < 50):
-                PositionsList.append(Positions[i])
-        else:
-            if(1 < len(Positions[i]) < 50):
-                PositionsList.append(Positions[i])
-
-
-
+        if(("Back" in  Positions[i]) or (Positions[i] == "Sweeper")):
+            Positions[i] = "Defender"
+        if("Midfield" in Positions[i]):
+            Positions[i] = "Midfielder"
+        if(("Winger" in Positions[i]) or ("Striker" in Positions[i]) or ("Forward" in Positions[i])):
+            Positions[i] = "Striker"
+        PositionsList.append(Positions[i]) 
     for i in range(2,(len(Players)*3),3):
         NationList.append(str(Nationality[i]).split('title="',1)[1].split('"/',1)[0])
     return (PlayersList,AgeList,NationList,PositionsList)
@@ -54,7 +48,6 @@ def get_info_team(url, headers):
     jugadores_prev = ['a']
     while(True): # <= 41
         print(i)
-
         equipo = get_info_page(f"{url}/page/{i}", headers, 'html.parser')
         if(jugadores_prev[0] == equipo[0][0]):
             break
