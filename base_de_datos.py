@@ -1,6 +1,7 @@
 import requests 
 from bs4 import BeautifulSoup
 import pandas as pd
+import time
 
 headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'}
 
@@ -42,12 +43,18 @@ def get_info_page(url: str, headers, parser: str):
     return (PlayersList,AgeList,NationList,PositionsList)
 
 def get_info_team(url, headers, nombre_equipo: str, df: pd.DataFrame):
+    page = url
+    pageTree = requests.get(page,headers=headers)
+    pageSoup = BeautifulSoup(pageTree.content, 'html.parser')
+    last_page = pageSoup.find_all("li", {"class": "tm-pagination__list-item tm-pagination__list-item--icon-last-page"})
+    last_page = str(last_page).split("(",1)[1].split(")",1)[0].split(" ")[1]
     jugadores = []
     edades = []
     paises = []
     posiciones = []
     i = 1
     jugadores_prev = ['a']
+    
     while(True):
         print(i)
         try:
@@ -70,7 +77,6 @@ def get_info_team(url, headers, nombre_equipo: str, df: pd.DataFrame):
     agg_functions = {'Player': 'first', 'Position': 'first', 'Age': 'first', 'Nation': 'first', 'Equipo': 'sum'}
     df = df.groupby(df['Player']).aggregate(agg_functions)
     return df
-
 
 x = "Sobreescribir"
 archivo = 'player_data'
@@ -116,6 +122,7 @@ if(x == "Concatenar"):
     #with pd.ExcelWriter(f'{archivo}.xlsx', mode='a', if_sheet_exists='overlay') as writer:  
         #final_df.to_excel(writer)
 
+    
 if(x == "Sobreescribir"):
     final_df = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors",final_df)
     final_df = get_info_team("https://www.transfermarkt.com/club-atletico-river-plate/alumni/verein/209", headers,"River Plate",final_df)
@@ -154,8 +161,16 @@ if(x == "Sobreescribir"):
         final_df.to_excel(writer)
     
 
+"""
 
+def really_expensive_function():
+    for i in range(10000):
+        print("Hi")
 
-
-
-
+if __name__ == "__main__":
+    start = time.time()
+    really_expensive_function()
+    end = time.time()
+    elapsed_time = end - start
+    print(f"Took {elapsed_time} seconds")
+"""
