@@ -75,8 +75,8 @@ def get_info_team(url, headers, nombre_equipo: str, df: pd.DataFrame):
 x = "Sobreescribir"
 archivo = 'player_data'
 final_df = pd.DataFrame({"Player": [], "Position": [],"Age": [], "Nation": [], "Equipo": []})
-#if(x == "Vaciar"):
-    #final_df.to_excel(f'/Users/Colegio/Desktop/TaTeTi-Futbol/{archivo}.xlsx',index=False)
+if(x == "Vaciar"):
+    final_df.to_excel(f'/Users/Colegio/Desktop/TaTeTi-Futbol/{archivo}.xlsx',index=False)
 
 if(x == "Concatenar"): 
     final_df = get_info_team("https://www.transfermarkt.com/ca-boca-juniors/alumni/verein/189",headers,"Boca Juniors",final_df)
@@ -150,7 +150,8 @@ if(x == "Sobreescribir"):
     final_df = get_info_team("https://www.transfermarkt.com/club-atletico-atlanta/alumni/verein/8057", headers,"Atlanta",final_df)
     final_df = get_info_team("https://www.transfermarkt.com/quilmes-atletico-club/alumni/verein/1826", headers,"Quilmes",final_df)
     final_df = get_info_team("https://www.transfermarkt.com/club-atletico-aldosivi/alumni/verein/12301", headers,"Aldosivi",final_df)
-    final_df.to_excel(f'/Users/Colegio/Desktop/TaTeTi-Futbol/{archivo}.xlsx',index=False)
+    with pd.ExcelWriter(f'{archivo}.xlsx', mode='a', if_sheet_exists='new') as writer:  
+        final_df.to_excel(writer)
     
 
 
