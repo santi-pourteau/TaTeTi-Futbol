@@ -28,6 +28,7 @@ def equipos():
 
     
 clubes=equipos()
+print(len(clubes))
 #print(clubes)
 
 
@@ -72,10 +73,12 @@ def menos_jugadores(matriz):
                 menor = valor
                 fila_menor = matriz.index(fila)
                 columna_menor = fila.index(valor)
-    return fila_menor,columna_menor
+    return fila_menor,columna_menor,menor
 matriz=matriz_clubes(clubes)
-fila_menor,columna_menor=menos_jugadores(matriz)   
-print(clubes[fila_menor],clubes[columna_menor])
+fila_menor,columna_menor,menor=menos_jugadores(matriz)
+#print(menor)   
+#print(clubes[fila_menor],clubes[columna_menor])
+print(jugadores_clubes(clubes[fila_menor],clubes[columna_menor]))
 
 # Cerrar la conexión
 conn.close()
