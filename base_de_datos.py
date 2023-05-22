@@ -53,11 +53,13 @@ def parse_info_pages(info_pages):
         AgeList = []
         PositionsList = []
         NationList = []
+        LinksList =[]
 
         Players = pageSoup.find_all("img", {"class": "bilderrahmen-fixed lazy lazy"})
         Age = pageSoup.find_all("td", {"class": "zentriert"})
         Positions = pageSoup.find_all("table", {"class": "inline-table"})
         Nationality = pageSoup.find_all("td", {"class": "zentriert"})
+        Link = pageSoup.find_all("td", {"class": "hauptlink"})
 
         for i in range(0, len(Players)):
             PlayersList.append(str(Players[i]).split('" class', 1)[0].split('<img alt="', 1)[1])
@@ -81,8 +83,12 @@ def parse_info_pages(info_pages):
                 NationList.append(str(Nationality[i]).split('title="', 1)[1].split('"/', 1)[0])
             else:
                 NationList.append("N/A")
+        
+        for i in range(0,len(Players)):
+            link = str(Link[i]).split('href="',1)[1].split('" ',1)[0]
+            LinksList.append(f"www.transfermarkt.com.ar{link}")
 
-        parsed_data.append((PlayersList, AgeList, NationList, PositionsList))
+        parsed_data.append((PlayersList, AgeList, NationList, PositionsList, LinksList))
 
     return parsed_data
 
@@ -91,6 +97,7 @@ async def get_info_team(url,nombre_equipo,df):
     edades = []
     paises = []
     posiciones = []
+    links = []
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36',
     }
@@ -107,11 +114,12 @@ async def get_info_team(url,nombre_equipo,df):
     parsed_data = parse_info_pages(info_pages)
 
     for data in parsed_data:
-        PlayersList, AgeList, NationList, PositionsList = data
+        PlayersList, AgeList, NationList, PositionsList, LinksList = data
         jugadores += PlayersList
         edades += AgeList
         paises += NationList
         posiciones += PositionsList
+        links += LinksList
         # Do something with the parsed data
     if(len(jugadores) < (last_page -1) * 25):
         raise ValueError("Cantidad de jugadores es menor a lo esperado")
@@ -119,10 +127,10 @@ async def get_info_team(url,nombre_equipo,df):
     equipos = []
     for i in range(0,len(jugadores)):
         equipos.append([nombre_equipo])
-    new_df = pd.DataFrame({"Player": jugadores, "Position": posiciones,"Age": edades, "Nation": paises, "Equipo": equipos})
+    new_df = pd.DataFrame({"Player": jugadores, "Position": posiciones,"Age": edades, "Nation": paises, "Equipo": equipos, "Links": links})
     df = pd.concat([df,new_df])
-    agg_functions = {'Player': 'first', 'Position': 'first', 'Age': 'first', 'Nation': 'first', 'Equipo': 'sum'}
-    df = df.groupby(df['Player']).aggregate(agg_functions)
+    agg_functions = {'Player': 'first', 'Position': 'first', 'Age': 'first', 'Nation': 'first', 'Equipo': 'sum', "Links": 'first'}
+    df = df.groupby(df['Links']).aggregate(agg_functions)
     print(len(df['Player']))
     return df
     
