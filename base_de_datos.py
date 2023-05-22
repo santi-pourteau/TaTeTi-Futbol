@@ -7,7 +7,10 @@ import asyncio
 import sys
 
 headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'}
-import asyncio
+
+
+
+
 
 async def fetch_data(session, url, headers, parser):
     max_retries = 5  # Maximum number of retries
@@ -164,7 +167,7 @@ if(x == "Sobreescribir"):
         final_df = asyncio.run(get_info_team("https://www.transfermarkt.com/club-atletico-atlanta/alumni/verein/8057","Atlanta",final_df))
         final_df = asyncio.run(get_info_team("https://www.transfermarkt.com/quilmes-atletico-club/alumni/verein/1826","Quilmes",final_df))
         final_df = asyncio.run(get_info_team("https://www.transfermarkt.com/club-atletico-aldosivi/alumni/verein/12301","Aldosivi",final_df))
-        with pd.ExcelWriter(f'{archivo}.xlsx', mode='a', if_sheet_exists='new') as writer:  
+        with pd.ExcelWriter(f'{archivo}.xlsx', mode='a', if_sheet_exists='overlay') as writer:  
             final_df.to_excel(writer)
     
     
