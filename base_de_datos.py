@@ -115,7 +115,7 @@ async def get_info_team(url,nombre_equipo,df):
         # Do something with the parsed data
     if(len(jugadores) < (last_page -1) * 25):
         raise ValueError("Cantidad de jugadores es menor a lo esperado")
-    print(len(jugadores))
+    
     equipos = []
     for i in range(0,len(jugadores)):
         equipos.append([nombre_equipo])
@@ -123,6 +123,7 @@ async def get_info_team(url,nombre_equipo,df):
     df = pd.concat([df,new_df])
     agg_functions = {'Player': 'first', 'Position': 'first', 'Age': 'first', 'Nation': 'first', 'Equipo': 'sum'}
     df = df.groupby(df['Player']).aggregate(agg_functions)
+    print(len(df['Player']))
     return df
     
 
