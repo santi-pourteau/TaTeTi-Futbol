@@ -69,7 +69,7 @@ def parse_info_pages(info_pages):
 
         for i in range(0, len(Positions)):
             Positions[i] = str(Positions[i]).split('<td>', 1)[1].split('</td>')[0]
-            if ("Back" in Positions[i]) or (Positions[i] == "Sweeper"):
+            if ("Back" in Positions[i]) or (Positions[i] == "Sweeper" or (Positions[i] == "Defence")):
                 Positions[i] = "Defender"
             if "Midfield" in Positions[i]:
                 Positions[i] = "Midfielder"
